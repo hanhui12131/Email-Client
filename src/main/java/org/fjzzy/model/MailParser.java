@@ -19,7 +19,7 @@ public class MailParser {
 		msgContent = new MessageContent();
 	}
 
-	
+	//邮件基本信息
 	public void getSimpleContent() throws MessagingException {
 		msgContent.setSubject(msg.getSubject());
 		msgContent.setFrom(msg.getFrom()[0].toString());
@@ -29,12 +29,22 @@ public class MailParser {
 	
 	// 单个邮件内容
 	public void rePart(Part part) throws Exception {
+		//part为带有附件内容，将邮件附件名与输入流存储到msgContent
 		if (part.getDisposition() != null) {
 			if (part.getFileName() != null) {
-				String name = MimeUtility.decodeText(part.getFileName());
+				//对可能带有中文的文件名进行解码
+				String name = "";
+				try {
+					name = MimeUtility.decodeText(part.getFileName());
+					
+				} catch (Exception e) {
+					name = part.getFileName();
+					// TODO: handle exception
+				}
 				msgContent.attch.add(name, part.getInputStream());
 			}
 		}
+		//part如果为文本类型则直接放入msgContent
 		if (part.isMimeType("text/*")) {
 			msgContent.appentContent((String) part.getContent());
 		}
@@ -54,10 +64,12 @@ public class MailParser {
 			}
 		}
 	}
-
 	
 	//邮件整体解析
 	public void parsing(Message msg) throws Exception{
+		//获取邮件基本信息
+		getSimpleContent();
+		//解析邮件体
 		if(msg.getContent() instanceof Multipart) {
 			Multipart multipart = (Multipart) msg.getContent() ;
 			reMultipart(multipart);
@@ -106,9 +118,10 @@ class MessageContent {
 	}
 
 	// 获得附件内容
-	public void getAttach(String filepath) throws Exception {
+	public void getAttach(String dirpath) throws Exception {
 		for (int i = 0; i < attch.in.size(); i++) {
-			File file = new File(attch.fileName.get(i));
+			String path = dirpath+attch.fileName.get(i);
+			File file = new File(path);
 			FileOutputStream fileOutputStream = new FileOutputStream(file);
 			BufferedOutputStream out = new BufferedOutputStream(fileOutputStream);
 			FileInputStream in = (FileInputStream) attch.in.get(i);

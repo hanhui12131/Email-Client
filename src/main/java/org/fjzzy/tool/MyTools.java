@@ -1,19 +1,8 @@
 package org.fjzzy.tool;
-
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.wb.swt.SWTResourceManager;
-/**
- * 这是一个用于邮件客户端的帮助工具类
- */
-
-public class MyTools{
-
-	//字体1
-	public static Font f1 = SWTResourceManager.getFont("宋体", 20, SWT.BOLD);
-	//字体2
-	public static Font f2 = SWTResourceManager.getFont("宋体", 14, SWT.NONE);
-	//字体3
-	public static Font f3 = SWTResourceManager.getFont("宋体", 12, SWT.NONE);
+import java.awt.*;
+public class MyTools {
+	public static Font f1 = new Font("宋体", Font.BOLD, 18);
+	public static Font f2 = new Font("宋体", Font.PLAIN, 14);
+	public static Font f3 = new Font("宋体", Font.PLAIN, 12);
+	public static Font f4 = new Font("楷体", Font.PLAIN, 14);
 }
-

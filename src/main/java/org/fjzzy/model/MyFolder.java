@@ -38,10 +38,10 @@ public class MyFolder extends AbstractTableModel{
 		msgs = folder.getMessages();
 		Message[] msgs = folder.getMessages();
 
-		FetchProfile fp = new FetchProfile();
-		fp.add(FetchProfile.Item.ENVELOPE);
-		fp.add("X-mailer");
-		folder.fetch(msgs, fp);
+//		FetchProfile fp = new FetchProfile();
+//		fp.add(FetchProfile.Item.ENVELOPE);
+//		fp.add("X-mailer");
+//		folder.fetch(msgs, fp);
 		intialTab();
 	}
 	//初始化表行列
@@ -53,8 +53,8 @@ public class MyFolder extends AbstractTableModel{
 		Rows = new Vector<Vector>();
 		String subject;
 		String From;
-		for(int i = msgs.length;i > 0 ; i--){
-			Message msg = msgs[i-1];
+		for(Message msg : msgs){
+			
 			
 			RowData = new Vector<String>();
 			subject =msg.getSubject();
