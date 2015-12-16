@@ -9,7 +9,7 @@ import javax.swing.table.*;;
 
 public class MyFolder extends AbstractTableModel{
 	//信件文件箱
-	Folder folder;
+	Folder folder = null;
 	//INBOX信箱中的邮件
 	Message[] msgs = null;
 	//表列
@@ -105,6 +105,16 @@ public class MyFolder extends AbstractTableModel{
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		// TODO 自动生成的方法存根
 		return Rows.get(rowIndex).get(columnIndex);
+	}
+	public void close(){
+		try {
+			if(folder != null){
+				folder.close(true);				
+			}
+		} catch (MessagingException e) {
+			// TODO 自动生成的 catch 块
+			e.printStackTrace();
+		}
 	}
 	
 

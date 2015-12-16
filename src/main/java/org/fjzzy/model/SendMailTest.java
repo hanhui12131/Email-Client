@@ -32,7 +32,7 @@ public class SendMailTest {
 			id[1] = "test";
 			
 			
-			msg.tst("美女<img src='cid:"+id[0]+"'/><img src='cid:"+id[1]+"'/>",attach1,id);
+			msg.ImgText("美女<img src='cid:"+id[0]+"'/><img src='cid:"+id[1]+"'/>",attach1,id);
 			msg.addAttach(attach1);
 			
 			
@@ -43,7 +43,7 @@ public class SendMailTest {
 			
 			
 			Transport transport=session.getTransport();
-			transport.connect("smtp.qq.com","1593423661@qq.com" , "a9908651251");
+			transport.connect("1593423661@qq.com" , "a9908651251");
 			transport.sendMessage(msg, new Address[]{new InternetAddress("1593423661@qq.com")});
 			transport.close();
 
@@ -66,7 +66,7 @@ public class SendMailTest {
 //			System.out.println(msg1[3].getMessageNumber());
 //			msg1[0].setFlag(Flags.Flag.DRAFT, true);
 //			System.out.println(msg1[0].isExpunged()+"++++++++++++++++++++++++++++");
-			
+
 			
 		} catch (Exception e) {
 			// TODO 自动生成的 catch 块
@@ -76,5 +76,7 @@ public class SendMailTest {
 		
 		
 	}
+	
+	
 
 }

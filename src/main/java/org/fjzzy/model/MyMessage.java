@@ -1,12 +1,12 @@
 package org.fjzzy.model;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.io.UnsupportedEncodingException;
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.activation.FileDataSource;
+import java.util.*;
+import java.io.*;
+import javax.activation.*;
 import javax.mail.*;
+import javax.mail.Flags.*;
+import javax.mail.Message.*;
 import javax.mail.internet.*;
 
 public class MyMessage extends MimeMessage {
@@ -67,7 +67,7 @@ public class MyMessage extends MimeMessage {
 		AllPart.addBodyPart(textPart);
 	}
 	//
-	public void tst(String text, ArrayList<String> resource,String[] id) throws MessagingException {
+	public void ImgText(String text, ArrayList<String> resource,String[] id) throws MessagingException {
 		//存储图片与文本内容的邮件体
 		MimeMultipart part = new MimeMultipart();
 		//存储文本内容的邮件体

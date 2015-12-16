@@ -6,6 +6,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 
@@ -14,9 +15,12 @@ import org.fjzzy.tool.MyTools;
 
 import java.awt.BorderLayout;
 import javax.swing.JPanel;
+import javax.mail.Message;
+import javax.mail.MessagingException;
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import java.awt.Insets;
+import java.awt.JobAttributes;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
@@ -30,6 +34,9 @@ public class MsgListView implements Runnable{
 	private JScrollPane jsp_list;
 	private MyAuthenticator auth1 = null;
 	private JPanel panel_1 = null;
+	private Thread t = null;
+	private static boolean isFrist = true;
+	private static boolean isRece = false;
 	/**
 	 * Launch the application.
 	 */
@@ -53,6 +60,7 @@ public class MsgListView implements Runnable{
 		this.Account = Account;
 		this.Pwd = Pwd;
 		initialize();
+		
 	}
 	public MsgListView() {
 		initialize();
@@ -64,6 +72,7 @@ public class MsgListView implements Runnable{
 	private void initialize() {
 		frame = new JFrame();
 		frame.setVisible(true);
+		frame.setTitle("信件列表");
 		frame.setBounds(100, 100, 776, 526);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
@@ -88,19 +97,12 @@ public class MsgListView implements Runnable{
 		JButton btn_receve = new JButton("收信");
 		btn_receve.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				boolean b = false;
-				try {
-					b = folder.getFolder().hasNewMessages();
-				} catch (Exception e2) {
-					// TODO: handle exception
-					e2.printStackTrace();
+				if(!isRece){					
+					thread();
+					isRece = true;
+				}else{					
+					JOptionPane.showMessageDialog(frame, "正在收信,请稍后!");
 				}
-				if(b){
-					System.out.println("+++++++++++++++++++++");
-				}else{
-					System.out.println("------------------------");
-				}
-				
 			}
 		});
 		btn_receve.setMargin(new Insets(0, 0, 0, 0));
@@ -108,28 +110,61 @@ public class MsgListView implements Runnable{
 		panel.add(btn_receve);
 		
 		JButton btn_write = new JButton("写信");
+		btn_write.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				WriteMsg writemsg = new WriteMsg(Account, Pwd);
+			}
+		});
 		btn_write.setBounds(21, 115, 57, 23);
 		btn_write.setMargin(new Insets(0, 0, 0, 0));
 		panel.add(btn_write);
 		
 		JButton btn_open = new JButton("打开");
+		btn_open.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int index = tbl.getSelectedRow()+1;
+				Message msg = null;
+				if(index < 0){
+					JOptionPane.showMessageDialog(frame, "请选择一行");
+				}else{
+					try {
+						msg = folder.getMessage(index);
+						MsgShowView showView  = new MsgShowView(msg);
+						showView.open();
+					} catch (MessagingException e1) {
+						// TODO 自动生成的 catch 块
+						e1.printStackTrace();
+					}
+				}
+			}
+		});
 		btn_open.setBounds(21, 188, 57, 23);
 		btn_open.setMargin(new Insets(0, 0, 0, 0));
 		panel.add(btn_open);
 		
 		JButton button = new JButton("退出");
+		button.setMargin(new Insets(0, 0, 0, 0));
+		button.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent e) {
+				// TODO 自动生成的方法存根
+				System.exit(1);
+			}
+		});
 		button.setBounds(21, 259, 57, 23);
 		panel.add(button);
 		
 		panel_1 = new JPanel();
 		splitPane.setRightComponent(panel_1);
 		panel_1.setLayout(new BorderLayout(0, 0));
-		
-		Thread t = new Thread(this);
-		t.start();
+		thread();
 		
 	}
-
+	public void thread(){
+		t = new Thread(this);
+		t.start();
+	}
+	
 	public void run() {
 		// TODO 自动生成的方法存根
 		auth1 = new MyAuthenticator(Account, Pwd, "pop3");
@@ -139,11 +174,29 @@ public class MsgListView implements Runnable{
 			// TODO 自动生成的 catch 块
 			e.printStackTrace();
 		}
-		tbl = new JTable(folder);
-		tbl.setRowHeight(25);
-		tbl.setFont(MyTools.f4);
-		jsp_list = new JScrollPane(tbl);
-		panel_1.add(jsp_list, BorderLayout.CENTER);
+		if(isFrist){
+			isFrist = false;
+			tbl = new JTable(folder);
+			tbl.setRowHeight(25);
+			tbl.setFont(MyTools.f4);
+			jsp_list = new JScrollPane(tbl);
+			panel_1.add(jsp_list, BorderLayout.CENTER);
+		}else{
+			try {
+				folder = new MyFolder(auth1);
+				JOptionPane.showMessageDialog(frame, "收信成功!");
+				isRece = false;
+			} catch (Exception e) {
+				// TODO 自动生成的 catch 块
+				e.printStackTrace();
+				JOptionPane.showMessageDialog(frame, "收信失败!");
+			}
+			tbl.setModel(folder);
+		}
 		frame.setVisible(true);
 	}
+	public void folderClose(){
+		folder.close();
+	}
+	
 }
