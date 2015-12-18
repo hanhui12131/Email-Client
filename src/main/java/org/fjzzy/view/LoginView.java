@@ -109,7 +109,7 @@ public class LoginView {
 					auth1 = new MyAuthenticator(Account, Pwd, "pop3");
 					session = auth1.getStoreSession();
 					session.setDebug(true);
-					store = session.getStore();
+					store = session.getStore("pop3");
 					store.connect();
 					isconnect = store.isConnected();
 					
@@ -126,10 +126,12 @@ public class LoginView {
 						e.printStackTrace();
 					}
 					if(!isconnect){
-						JOptionPane.showMessageDialog(frame, "账号错误或密码错误","连接失败",JOptionPane.INFORMATION_MESSAGE);
+						JOptionPane.showMessageDialog(frame, "账号密码错误\n请检查是否已将邮件的SMTP/POP3协议打开!","连接失败",JOptionPane.INFORMATION_MESSAGE);
 						
 					}else{
 						//保存密码
+						AccountInfo.Account = Account;
+						AccountInfo.Password = Pwd;
 						saveInfo();
 						frame.dispose();
 						MsgListView msgListView = new MsgListView(Account,Pwd);

@@ -25,7 +25,7 @@ public class MyAuthenticator extends Authenticator {
 		if(ProtocolType.equals("smtp")){
 			return ProtocolType+"."+part[1];
 		}else{
-			return "pop."+part[1];
+			return "imap."+part[1];
 		}
 	}
 	//获取发送Session

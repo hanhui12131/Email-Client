@@ -18,7 +18,6 @@ public class MyFolder extends AbstractTableModel{
 	Vector<Vector> Rows;
 	//表行数据
 	Vector<String> RowData;
-	
 	public Folder getFolder() {
 		return folder;
 	}
@@ -28,7 +27,7 @@ public class MyFolder extends AbstractTableModel{
 		session.setDebug(true);
 		Store store = session.getStore();
 		//连接信箱
-		store.connect();
+		store.connect(auth.getAccount(), auth.getPwd());
 		System.out.println(store.isConnected());
 		//初始化Folder
 		folder = store.getFolder("INBOX");
@@ -36,12 +35,6 @@ public class MyFolder extends AbstractTableModel{
 		folder.open(Folder.READ_WRITE);
 		//获取信箱邮件
 		msgs = folder.getMessages();
-		Message[] msgs = folder.getMessages();
-
-//		FetchProfile fp = new FetchProfile();
-//		fp.add(FetchProfile.Item.ENVELOPE);
-//		fp.add("X-mailer");
-//		folder.fetch(msgs, fp);
 		intialTab();
 	}
 	//初始化表行列
@@ -79,11 +72,11 @@ public class MyFolder extends AbstractTableModel{
 	
 	
 	public Message[] getMessages() throws MessagingException{
-		return folder.getMessages();
+		return msgs;
 	}
 
 	public Message getMessage(int i) throws MessagingException{
-		return folder.getMessage(i);
+		return msgs[i-1];
 	}
 	
 	@Override
@@ -109,7 +102,7 @@ public class MyFolder extends AbstractTableModel{
 	public void close(){
 		try {
 			if(folder != null){
-				folder.close(true);				
+				folder.close(true);
 			}
 		} catch (MessagingException e) {
 			// TODO 自动生成的 catch 块

@@ -11,17 +11,23 @@ import javax.swing.filechooser.*;
 import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.mail.Address;
+import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import javax.swing.JButton;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 import org.fjzzy.model.*;
+import org.fjzzy.tool.MyTools;
+
+import javax.swing.JScrollPane;
 
 public class WriteMsg {
 
@@ -36,7 +42,7 @@ public class WriteMsg {
 	//密码
 	private String pwd;
 	//图片id
-	private static int imgId = 0;
+	private int imgId = 0;
 	//图片路径
 	private ArrayList<String> Img = null;
 	//文本内容
@@ -50,36 +56,68 @@ public class WriteMsg {
 	 //会话
 	 Session session = null;
 	 Transport transport = null;
+	 private boolean istransmit = false;
 	 private JButton btn_send;
+	 private JButton btn_attchment;
+	 private JButton btn_img;
+	 //转发邮件
+	 private MyMessage transmit = null;
+	 private JScrollPane scrollPane;
 
 	/**
 	 * Launch the application.
 	 */
-//	public static void main(String[] args) {
-//		EventQueue.invokeLater(new Runnable() {
-//			public void run() {
-//				try {
-//					WriteMsg window = new WriteMsg("","");
-//					window.frame.setVisible(true);
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//				}
-//			}
-//		});
-//	}
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					WriteMsg window = new WriteMsg();
+					window.frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
 
 	/**
 	 * Create the application.
 	 */
-	public WriteMsg(String account, String pwd) {
-		initialize();
-		this.account = account;
-		this.pwd = pwd;
+	
+	public void init(){
+		this.account = AccountInfo.Account;
+		this.pwd = AccountInfo.Password;
 		Img = new ArrayList<String>();
 		attchment = new ArrayList<String>();
 		frame.setVisible(true);
+	 }
+	 //正常写信
+	public WriteMsg() {
+		initialize();
+		init();
+		frame.setVisible(true);
 	}
-
+	//回复
+	public WriteMsg(String getter) {
+		initialize();
+		init();
+		txt_getter.setText(getter);
+		txt_getter.setEditable(false);
+		frame.setVisible(true);
+	}
+	//转发
+	public WriteMsg(MessageContent content){
+		initialize();
+		init();
+		istransmit = true;
+		edt_content.setText(content.getContent());
+		edt_content.setEditable(false);
+		btn_img.setEnabled(false);
+		btn_attchment.setEnabled(false);
+		String s= content.getSubject() ;
+		txt_subject.setText(s);
+		txt_subject.setEditable(false);
+	}
 	/**
 	 * Initialize the contents of the frame.
 	 */
@@ -91,6 +129,7 @@ public class WriteMsg {
 		frame.getContentPane().setLayout(null);
 		
 		JLabel lbl_getter = new JLabel("收件人：");
+		lbl_getter.setFont(MyTools.f2);
 		lbl_getter.setBounds(56, 46, 54, 15);
 		frame.getContentPane().add(lbl_getter);
 		
@@ -100,6 +139,7 @@ public class WriteMsg {
 		txt_getter.setColumns(10);
 		
 		JLabel label = new JLabel("主  题：");
+		label.setFont(MyTools.f2);
 		label.setBounds(56, 91, 54, 15);
 		frame.getContentPane().add(label);
 		
@@ -107,12 +147,8 @@ public class WriteMsg {
 		txt_subject.setBounds(112, 88, 396, 21);
 		frame.getContentPane().add(txt_subject);
 		txt_subject.setColumns(10);
-		
-		edt_content = new JEditorPane();
-		edt_content.setBounds(56, 150, 458, 230);
-		frame.getContentPane().add(edt_content);
 		//添加附件到信件中
-		JButton btn_attchment = new JButton("附件");
+		btn_attchment = new JButton("附件");
 		btn_attchment.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser chooser = new JFileChooser();
@@ -125,12 +161,13 @@ public class WriteMsg {
 				}
 			}
 		});
+		btn_attchment.setFont(MyTools.f2);
 		btn_attchment.setMargin(new Insets(0, 0, 0, 0));
 		btn_attchment.setBounds(84, 117, 54, 23);
 		frame.getContentPane().add(btn_attchment);
 		
 		//添加图片到文本中
-		JButton btn_img = new JButton("图片");
+		btn_img = new JButton("图片");
 		btn_img.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//打开文件对话框
@@ -160,6 +197,7 @@ public class WriteMsg {
 				
 			}
 		});
+		btn_img.setFont(MyTools.f2);
 		btn_img.setMargin(new Insets(0, 0, 0, 0));
 		btn_img.setBounds(143, 117, 54, 23);
 		frame.getContentPane().add(btn_img);
@@ -168,9 +206,16 @@ public class WriteMsg {
 		btn_send = new JButton("发送");
 		btn_send.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				send();
+				
+				System.out.println("+++++++++++++++++++++++++"+AccountInfo.Account);
+				if(!istransmit){					
+					send();
+				}else{
+					transmit();
+				}
 			}
 		});
+		btn_send.setFont(MyTools.f2);
 		btn_send.setMargin(new Insets(0, 0, 0, 0));
 		btn_send.setBounds(460, 404, 54, 23);
 		frame.getContentPane().add(btn_send);
@@ -181,9 +226,17 @@ public class WriteMsg {
 				frame.dispose();
 			}
 		});
+		btn_back.setFont(MyTools.f2);
 		btn_back.setMargin(new Insets(0, 0, 0, 0));
 		btn_back.setBounds(329, 404, 66, 23);
 		frame.getContentPane().add(btn_back);
+		
+		scrollPane = new JScrollPane();
+		scrollPane.setBounds(34, 155, 509, 221);
+		frame.getContentPane().add(scrollPane);
+		
+		edt_content = new JEditorPane();
+		scrollPane.setViewportView(edt_content);
 	}
 	public void send(){
 		try {
@@ -211,7 +264,7 @@ public class WriteMsg {
 			}
 			//设置收件人
 			msg.setRecipient(RecipientType.TO, new InternetAddress(getter));
-			msg.setFrom(new InternetAddress(getter));
+			msg.setFrom(new InternetAddress(account));
 			transport=session.getTransport();
 			transport.connect(account , pwd);
 			transport.sendMessage(msg, new Address[]{new InternetAddress(getter)});
@@ -229,5 +282,36 @@ public class WriteMsg {
 				e.printStackTrace();
 			}
 		}
+	}
+	public void transmit(){
+		String getter;
+		try {
+			auth = new MyAuthenticator(account, pwd, "smtp");
+			session = auth.getSendSession();
+			session.setDebug(true);
+			getter = txt_getter.getText().trim();
+			//新建转发邮件
+			this.transmit= new MyMessage(session);
+			
+			//设置收件人
+			transmit.setRecipient(RecipientType.TO, new InternetAddress(getter));
+			transmit.setFrom(new InternetAddress(account));
+			transmit.setSubject(txt_subject.getText());
+			transmit.addContent(edt_content.getText().toString());
+			
+			transport=session.getTransport();
+			transport.connect(account , pwd);
+			transport.sendMessage(transmit, new Address[]{new InternetAddress(getter)});
+		} catch (AddressException e) {
+			// TODO 自动生成的 catch 块
+			e.printStackTrace();
+		} catch (MessagingException e) {
+			// TODO 自动生成的 catch 块
+			e.printStackTrace();
+		}
+		JOptionPane.showMessageDialog(frame, "发送成功!");
+	}
+	public void isEmpty(){
+		
 	}
 }

@@ -97,6 +97,7 @@ public class MsgListView implements Runnable{
 		JButton btn_receve = new JButton("收信");
 		btn_receve.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showMessageDialog(frame, "正在收信,请稍后!");
 				if(!isRece){					
 					thread();
 					isRece = true;
@@ -105,6 +106,7 @@ public class MsgListView implements Runnable{
 				}
 			}
 		});
+		btn_receve.setFont(MyTools.f2);
 		btn_receve.setMargin(new Insets(0, 0, 0, 0));
 		btn_receve.setBounds(21, 45, 57, 23);
 		panel.add(btn_receve);
@@ -112,10 +114,11 @@ public class MsgListView implements Runnable{
 		JButton btn_write = new JButton("写信");
 		btn_write.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				WriteMsg writemsg = new WriteMsg(Account, Pwd);
+				WriteMsg writemsg = new WriteMsg();
 			}
 		});
 		btn_write.setBounds(21, 115, 57, 23);
+		btn_write.setFont(MyTools.f2);
 		btn_write.setMargin(new Insets(0, 0, 0, 0));
 		panel.add(btn_write);
 		
@@ -124,7 +127,7 @@ public class MsgListView implements Runnable{
 			public void actionPerformed(ActionEvent e) {
 				int index = tbl.getSelectedRow()+1;
 				Message msg = null;
-				if(index < 0){
+				if(index <1){
 					JOptionPane.showMessageDialog(frame, "请选择一行");
 				}else{
 					try {
@@ -139,6 +142,7 @@ public class MsgListView implements Runnable{
 			}
 		});
 		btn_open.setBounds(21, 188, 57, 23);
+		btn_open.setFont(MyTools.f2);
 		btn_open.setMargin(new Insets(0, 0, 0, 0));
 		panel.add(btn_open);
 		
@@ -151,6 +155,7 @@ public class MsgListView implements Runnable{
 				System.exit(1);
 			}
 		});
+		button.setFont(MyTools.f2);
 		button.setBounds(21, 259, 57, 23);
 		panel.add(button);
 		

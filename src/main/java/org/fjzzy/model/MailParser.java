@@ -41,6 +41,7 @@ public class MailParser {
 					name = part.getFileName();
 					// TODO: handle exception
 				}
+				msgContent.hasAttch = true;
 				msgContent.attch.add(name, part.getInputStream());
 			}
 		}
@@ -81,22 +82,5 @@ public class MailParser {
 		}
 	}
 	
-
-}
-
-class Attachment {
-	// 附件名
-	ArrayList<String> fileName;
-	// 附件输入流
-	ArrayList<InputStream> in;
-	public Attachment() {
-		fileName = new ArrayList<String>();
-		in = new ArrayList<InputStream>();
-	}
-
-	public void add(String name, InputStream input) {
-		fileName.add(name);
-		this.in.add(input);
-	}
 
 }
