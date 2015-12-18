@@ -38,14 +38,14 @@ public class MsgShowView {
 	 * Launch the application.
 	 * @param args
 	 */
-	public static void main(String[] args) {
-		try {
-			MsgShowView window = new MsgShowView();
-			window.open();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+//	public static void main(String[] args) {
+//		try {
+//			MsgShowView window = new MsgShowView();
+//			window.open();
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
 
 	public MsgShowView(Message msg){
 		this.msg = msg;
